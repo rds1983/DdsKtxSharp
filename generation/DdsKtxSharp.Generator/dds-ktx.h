@@ -446,7 +446,7 @@ typedef struct ddsktx__block_info
 
 #ifndef ddsktx_assert
 #   include <assert.h>
-#   define ddsktx_assert(_a)       assert(_a)
+#   define ddsktx_assert(_a)
 #endif
 
 #ifndef ddsktx_strcpy
@@ -463,10 +463,14 @@ typedef struct ddsktx__block_info
 #   define ddsktx_memcmp(_ptr1, _ptr2, _num) memcmp((_ptr1), (_ptr2), (_num))
 #endif
 
+void dds_ktx_err(const char* msg)
+{
+}
+
 #define ddsktx__max(a, b)                  ((a) > (b) ? (a) : (b))
 #define ddsktx__min(a, b)                  ((a) < (b) ? (a) : (b))
 #define ddsktx__align_mask(_value, _mask)  (((_value)+(_mask)) & ((~0)&(~(_mask))))
-#define ddsktx__err(_err, _msg)            if (_err)  ddsktx_strcpy(_err->msg, _msg);   return false
+#define ddsktx__err(_err, _msg)            dds_ktx_err(_msg); return false
 
 static const ddsktx__dds_translate_fourcc_format k__translate_dds_fourcc[] = {
     { DDSKTX__DDS_DXT1,                  DDSKTX_FORMAT_BC1,     false },
@@ -895,19 +899,20 @@ static inline int ddsktx__read(ddsktx__mem_reader* reader, void* buff, int size)
     return read_bytes;
 }
 
+static const uint8_t ktx__id[] = { 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A };
+
 static bool ddsktx__parse_ktx(ddsktx_texture_info* tc, const void* file_data, int size, ddsktx_error* err)
 {
-    static const uint8_t ktx__id[] = { 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A };
 
     ddsktx_memset(tc, 0x0, sizeof(ddsktx_texture_info));
 
     ddsktx__mem_reader r = {(const uint8_t*)file_data, size, sizeof(uint32_t)};
     ddsktx__ktx_header header;
-    if (ddsktx__read(&r, &header, sizeof(header)) != DDSKTX__KTX_HEADER_SIZE) {
+    if (ddsktx__read(&r, &header, sizeof(ddsktx__ktx_header)) != DDSKTX__KTX_HEADER_SIZE) {
         ddsktx__err(err, "ktx; header size does not match");
     }
 
-    if (ddsktx_memcmp(header.id, ktx__id, sizeof(header.id)) != 0) {
+    if (ddsktx_memcmp(header.id, ktx__id, 8) != 0) {
         ddsktx__err(err, "ktx: invalid file header");
     }
 
@@ -970,7 +975,7 @@ static bool ddsktx__parse_dds(ddsktx_texture_info* tc, const void* file_data, in
 {
     ddsktx__mem_reader r = {(const uint8_t*)file_data, size, sizeof(uint32_t)};
     ddsktx__dds_header header;
-    if (ddsktx__read(&r, &header, sizeof(header)) < DDSKTX__DDS_HEADER_SIZE ||
+    if (ddsktx__read(&r, &header, sizeof(ddsktx__dds_header)) < DDSKTX__DDS_HEADER_SIZE ||
         header.size != DDSKTX__DDS_HEADER_SIZE)
     {
         ddsktx__err(err, "dds: header size does not match");
@@ -991,7 +996,7 @@ static bool ddsktx__parse_dds(ddsktx_texture_info* tc, const void* file_data, in
         header.pixel_format.fourcc == DDSKTX__DDS_DX10)
     {
         ddsktx__dds_header_dxgi dxgi_header;
-        ddsktx__read(&r, &dxgi_header, sizeof(dxgi_header));
+        ddsktx__read(&r, &dxgi_header, sizeof(ddsktx__dds_header_dxgi));
         dxgi_format = dxgi_header.dxgi_format;
         array_size = dxgi_header.array_size;
     }
@@ -1087,11 +1092,10 @@ void ddsktx_get_sub(const ddsktx_texture_info* tc, ddsktx_sub_data* sub_data,
     ddsktx_format format = tc->format;
 
     ddsktx_assert(format < _DDSKTX_FORMAT_COUNT && format != _DDSKTX_FORMAT_COMPRESSED);
-    const ddsktx__block_info* binfo = &k__block_info[format];
-    const int bpp          = binfo->bpp;
-    const int block_size   = binfo->block_size;
-    const int min_block_x  = binfo->min_block_x;
-    const int min_block_y  = binfo->min_block_y;
+    const int bpp          = k__block_info[format].bpp;
+    const int block_size   = k__block_info[format].block_size;
+    const int min_block_x  = k__block_info[format].min_block_x;
+    const int min_block_y  = k__block_info[format].min_block_y;
 
     int num_faces;
 
@@ -1110,12 +1114,14 @@ void ddsktx_get_sub(const ddsktx_texture_info* tc, ddsktx_sub_data* sub_data,
     }    
 
     if (tc->flags & DDSKTX_TEXTURE_FLAG_DDS) {
-        for (int layer = 0, num_layers = tc->num_layers; layer < num_layers; layer++) {
+		int num_layers = tc->num_layers;
+        for (int layer = 0; layer < num_layers; layer++) {
             for (int face = 0; face < num_faces; face++) {
                 int width = tc->width;
                 int height = tc->height;
 
-                for (int mip = 0, mip_count = tc->num_mips; mip < mip_count; mip++) {
+				int mip_count = tc->num_mips;
+                for (int mip = 0; mip < mip_count; mip++) {
                     int row_bytes, mip_size;
                     
                     if (format < _DDSKTX_FORMAT_COMPRESSED) {
@@ -1164,7 +1170,8 @@ void ddsktx_get_sub(const ddsktx_texture_info* tc, ddsktx_sub_data* sub_data,
         int width = tc->width;
         int height = tc->height;
 
-        for (int mip = 0, c = tc->num_mips; mip < c; mip++) {
+		int c = tc->num_mips;
+        for (int mip = 0; mip < c; mip++) {
             int row_bytes, mip_size;
 
             if (format < _DDSKTX_FORMAT_COMPRESSED) {
@@ -1183,10 +1190,11 @@ void ddsktx_get_sub(const ddsktx_texture_info* tc, ddsktx_sub_data* sub_data,
             }
 
             int image_size;
-            ddsktx__read(&r, &image_size, sizeof(image_size)); 
+            ddsktx__read(&r, &image_size, sizeof(int)); 
             ddsktx_assert(image_size == (mip_size*num_faces*num_slices) && "image size mismatch");
 
-            for (int layer = 0, num_layers = tc->num_layers; layer < num_layers; layer++) {
+			int num_layers = tc->num_layers;
+            for (int layer = 0; layer < num_layers; layer++) {
                 for (int face = 0; face < num_faces; face++) {
                     for (int slice = 0; slice < num_slices; slice++) {
                         if (layer == array_idx && mip == mip_idx &&
@@ -1236,7 +1244,7 @@ bool ddsktx_parse(ddsktx_texture_info* tc, const void* file_data, int size, ddsk
     
     // Read file flag and determine the file type
     uint32_t file_flag = 0;
-    if (ddsktx__read(&r, &file_flag, sizeof(file_flag)) != sizeof(file_flag)) {
+    if (ddsktx__read(&r, &file_flag, sizeof(uint32_t)) != sizeof(uint32_t)) {
         ddsktx__err(err, "invalid texture file");
     }
 

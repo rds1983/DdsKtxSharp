@@ -4,7 +4,7 @@
     <Product>DdsKtxSharp</Product>
     <PackageId>DdsKtxSharp</PackageId>
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
-    <Description>C# port of the stb_image.h</Description>
+    <Description>C# port of the https://github.com/septag/dds-ktx</Description>
     <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/rds1983/DdsKtxSharp</PackageProjectUrl>
     <Version>1.1.0.0</Version>

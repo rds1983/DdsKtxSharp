@@ -24,9 +24,8 @@ namespace DdsKtxSharp.Generator
 			data = data.Replace("((void *)(0))", "null");
 			data = data.Replace("(bool)(0)", "false");
 			data = data.Replace("(bool)(1)", "true");
-			data = data.Replace("bit_mask =  {", "bit_mask = new uint[] {");
-			data = data.Replace("ddsktx__mem_reader r = (ddsktx__mem_reader)({ (byte*)(file_data), size, sizeof(uint) })",
-				"ddsktx__mem_reader r = new ddsktx__mem_reader()");
+			data = data.Replace("bit_mask = {", "bit_mask = new uint[] {");
+
 			data = data.Replace("(sizeof((k__translate_ktx_fmt)) / sizeof(ddsktx__ktx_format_info))",
 				"k__translate_ktx_fmt.Length");
 			data = data.Replace("(int)(sizeof((k__translate_ktx_fmt2)) / sizeof(ddsktx__ktx_format_info2))",
@@ -38,7 +37,12 @@ namespace DdsKtxSharp.Generator
 			data = data.Replace("(int)(sizeof((k__translate_dxgi)) / sizeof(ddsktx__dds_translate_fourcc_format))",
 				"k__translate_dxgi.Length");
 
-			data = data.Replace("((cubemap) != 0)", "cubemap");
+			data = data.Replace("((cubemap) != 0)", "(cubemap)");
+			data = data.Replace("((has_alpha) != 0)", "(has_alpha)");
+			data = data.Replace("((srgb) != 0)", "(srgb)");
+
+			data = data.Replace("(header.caps1 & 0x00400000)?", "(header.caps1 & 0x00400000) != 0?");
+			data = data.Replace("(k__formats_info[format].has_alpha) != 0", "(k__formats_info[format].has_alpha)");
 
 			return data;
 		}
@@ -52,7 +56,6 @@ namespace DdsKtxSharp.Generator
 				{
 					"DDSKTX_IMPLEMENT"
 				},
-				Class = "DdsKtx",
 				SkipStructs = new string[]
 				{
 					"stbir__filter_info",

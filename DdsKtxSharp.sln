@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AD5041AC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DdsKtxSharp", "src\DdsKtxSharp.csproj", "{4A4D54AD-8A17-457B-BBDC-14E1C983901E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DdsKtxSharp.Viewer", "tests\DdsKtxSharp.Viewer\DdsKtxSharp.Viewer.csproj", "{2C0116DD-FB41-490A-B718-CDFE5308937C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,9 +19,16 @@ Global
 		{4A4D54AD-8A17-457B-BBDC-14E1C983901E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A4D54AD-8A17-457B-BBDC-14E1C983901E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A4D54AD-8A17-457B-BBDC-14E1C983901E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C0116DD-FB41-490A-B718-CDFE5308937C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C0116DD-FB41-490A-B718-CDFE5308937C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C0116DD-FB41-490A-B718-CDFE5308937C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C0116DD-FB41-490A-B718-CDFE5308937C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2C0116DD-FB41-490A-B718-CDFE5308937C} = {AD5041AC-C96B-42F8-BC8C-BFFD2090B364}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9C812E7-F89A-4B6E-8F9D-981D5F8BBAB3}
