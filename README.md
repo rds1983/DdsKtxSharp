@@ -23,7 +23,7 @@ DdsKtxSharp exposes API similar to dds-ktx.h. However that API is complicated an
 
 Thus utility class DdsKtxParser had been made to wrap that functionality.
 
-Simple code to load a DDS/KTX image
+Simple code to parse a DDS/KTX image
 ```c# 
     DdsKtxParser parser = DdsKtxParser.FromMemory(data);
 
