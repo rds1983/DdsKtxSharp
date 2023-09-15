@@ -4,7 +4,12 @@ using static DdsKtxSharp.DdsKtx;
 
 namespace DdsKtxSharp
 {
-	public unsafe class DdsKtxParser
+#if !DDSKTXSHARP_INTERNAL
+	public
+#else
+	internal
+#endif
+	unsafe class DdsKtxParser
 	{
 		private readonly byte[] _data;
 

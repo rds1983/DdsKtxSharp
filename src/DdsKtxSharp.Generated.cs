@@ -973,7 +973,7 @@ namespace DdsKtxSharp
 
 			if (format == ddsktx_format._DDSKTX_FORMAT_COUNT)
 			{
-				dds_ktx_err("ktx: unsupported format");
+				dds_ktx_err($"ktx: unsupported format {header.internal_format}");
 				return false;
 			}
 
@@ -1103,7 +1103,7 @@ namespace DdsKtxSharp
 
 			if (format == ddsktx_format._DDSKTX_FORMAT_COUNT)
 			{
-				dds_ktx_err("dds: unknown format");
+				dds_ktx_err($"dds: unknown format {dxgi_format}");
 				return false;
 			}
 

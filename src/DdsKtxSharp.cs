@@ -14,6 +14,7 @@ namespace DdsKtxSharp
 
 		private static unsafe void dds_ktx_err(string error)
 		{
+
 			ddsktx__dds_translate_pixel_format f = new ddsktx__dds_translate_pixel_format { bit_mask = new uint[] { 1, 2, 3, 4 } };
 
 			LastError = error;
