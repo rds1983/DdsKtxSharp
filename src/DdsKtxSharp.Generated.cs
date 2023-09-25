@@ -454,6 +454,12 @@ namespace DdsKtxSharp
 			},
 			new ddsktx__dds_translate_pixel_format
 			{
+				bit_count = 8, flags = 0x00000002,
+				bit_mask = new uint[] {0x00000000, 0x00000000, 0x00000000, 0x000000ff},
+				format = ddsktx_format.DDSKTX_FORMAT_A8
+			},
+			new ddsktx__dds_translate_pixel_format
+			{
 				bit_count = 16, flags = 0x00080000,
 				bit_mask = new uint[] {0x000000ff, 0x0000ff00, 0x00000000, 0x00000000},
 				format = ddsktx_format.DDSKTX_FORMAT_RG8S
